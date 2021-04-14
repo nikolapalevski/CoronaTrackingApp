@@ -35,6 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:completionThreshold="1"
+            android:inputType="textCapWords"
             android:ems="15"
             android:completionHint="Select a country"
             android:hint="Select a country"/>
@@ -81,9 +82,20 @@
         android:id="@+id/buttonAllCountries"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
+        android:layout_marginBottom="20dp"
         android:onClick="startAllCountriesActivity"
         android:text="@string/show_all_countries"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonFavouriteCountries"/>
+    <Button
+        android:id="@+id/buttonFavouriteCountries"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:onClick="startFavouriteCountriesActivity"
+        android:text="Favourite countries"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

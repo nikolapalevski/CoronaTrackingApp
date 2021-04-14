@@ -3,26 +3,36 @@ package com.example.coronatrackingapp.Helpers;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.coronatrackingapp.R;
 import com.example.coronatrackingapp.Utils.OnCountryClickListener;
+import com.example.coronatrackingapp.Utils.OnFavouriteCountryClickListener;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> implements Filterable {
 
     private final OnCountryClickListener onClickListener;
+    private final OnFavouriteCountryClickListener onFavouriteCountryClickListener;
 
     private final List<String> data;
+    private  List<String> dataListFull;
 
-    public RecyclerAdapter(OnCountryClickListener listener, List<String> data) {
+    public RecyclerAdapter(OnCountryClickListener listener, List<String> data, OnFavouriteCountryClickListener onFavouriteCountryClickListener) {
         this.onClickListener = listener;
         this.data = data;
+        this.onFavouriteCountryClickListener = onFavouriteCountryClickListener;
+        this.dataListFull = new ArrayList<>(data);
     }
 
     @NonNull
@@ -38,6 +48,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
     public void onBindViewHolder(@NonNull RecyclerAdapter.ViewHolder holder, int position) {
         holder.textViewCountry.setText(data.get(position));
         holder.textViewCountry.setOnClickListener(view -> onClickListener.onCountryClick(data.get(position)));
+        holder.imageViewFavourite.setOnClickListener( view -> onFavouriteCountryClickListener.onFavouriteClick(data.get(position)));
     }
 
     @Override
@@ -45,12 +56,45 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHo
         return data.size();
     }
 
+    @Override
+    public Filter getFilter() {
+        return dataListFilter;
+    }
+    private Filter dataListFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+            List<String> filteredList = new ArrayList<>();
+            if(charSequence == null || charSequence.length() == 0){
+                filteredList.addAll(dataListFull);
+            }else{
+
+                for(String country : dataListFull){
+                    if(country.toLowerCase().contains(charSequence.toString().toLowerCase())){
+                        filteredList.add(country);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            data.clear();
+            data.addAll((Collection<? extends String>) filterResults.values);
+            notifyDataSetChanged();
+        }
+    };
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewCountry;
+        ImageView imageViewFavourite;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewCountry = itemView.findViewById(R.id.textViewAdapterItem);
+            imageViewFavourite = itemView.findViewById(R.id.imageFavourite);
         }
     }
 }

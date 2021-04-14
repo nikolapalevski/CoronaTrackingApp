@@ -2,7 +2,7 @@ package com.example.coronatrackingapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class All {
+public class Region {
 
     @SerializedName("confirmed")
     private String confirmed;
@@ -11,7 +11,7 @@ public class All {
     @SerializedName("deaths")
     private String deaths;
 
-    public All(String confirmed, String recovered, String deaths) {
+    public Region(String confirmed, String recovered, String deaths) {
         this.confirmed = confirmed;
         this.recovered = recovered;
         this.deaths = deaths;

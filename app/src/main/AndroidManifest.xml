@@ -11,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CoronaTrackingApp">
-        <activity android:name=".Activities.SingleCountry"></activity>
+        <activity android:name=".Activities.FavouriteCountriesTestActivity"></activity>
+        <activity android:name=".Activities.FavouriteCountriesActivity" />
+        <activity android:name=".Activities.SingleCountry" />
         <activity android:name=".Activities.AllCountriesActivity" />
         <activity
             android:name=".Activities.SplashScreen"

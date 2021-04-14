@@ -3,6 +3,8 @@ package com.example.coronatrackingapp.Models;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.example.coronatrackingapp.Utils.OnFavouriteCountryClickListener;
+
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;

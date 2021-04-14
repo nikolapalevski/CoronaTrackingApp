@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import com.example.coronatrackingapp.Models.All;
+import com.example.coronatrackingapp.Models.Region;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
 import com.example.coronatrackingapp.R;
@@ -51,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
         String currCountry = binding.editTextCountry.getText().toString();
         binding.textViewInfo.setText("");
 
-        Call<Map<String, All>> call = myApi.getSpecificCountry(currCountry);
-        call.enqueue(new Callback<Map<String, All>>() {
+        Call<Map<String, Region>> call = myApi.getSpecificCountry(currCountry);
+        call.enqueue(new Callback<Map<String, Region>>() {
             @Override
-            public void onResponse(@NonNull Call<Map<String, All>> call, @NonNull Response<Map<String, All>> response) {
-                Map<String, All> mapRegions = response.body();
+            public void onResponse(@NonNull Call<Map<String, Region>> call, @NonNull Response<Map<String, Region>> response) {
+                Map<String, Region> mapRegions = response.body();
                 StringBuilder finalResult = new StringBuilder(currCountry + "\n\n");
                 for (String keys : mapRegions.keySet()) {
 //                    Log.i("KEYS", keys);
@@ -70,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Map<String, All>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Map<String, Region>> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, "Error loading!", Toast.LENGTH_SHORT).show();
             }
         });
@@ -93,27 +92,27 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadAllCountries() {
 
-        myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, All>>>() {
+        myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Region>>>() {
             @Override
-            public void onResponse(@NonNull Call<Map<String, Map<String, All>>> call, @NonNull Response<Map<String, Map<String, All>>> response) {
-                Map<String, Map<String, All>> mapAllCountries = response.body();
+            public void onResponse(@NonNull Call<Map<String, Map<String, Region>>> call, @NonNull Response<Map<String, Map<String, Region>>> response) {
+                Map<String, Map<String, Region>> mapAllCountries = response.body();
                 countries = mapAllCountries.keySet().toArray(new String[0]);
 
                 //testing for iterating through map
-                for (Map.Entry<String, Map<String, All>> drzava : mapAllCountries.entrySet()) {
-                    Map<String, All> childMap = drzava.getValue();
-                    for (Map.Entry<String, All> region : childMap.entrySet()) {
+                for (Map.Entry<String, Map<String, Region>> drzava : mapAllCountries.entrySet()) {
+                    Map<String, Region> childMap = drzava.getValue();
+                    for (Map.Entry<String, Region> region : childMap.entrySet()) {
                         String imeRegion = region.getKey();
                         String childValue = region.getValue().getConfirmed();
-                        Log.i("KEY", imeRegion);
-                        Log.i("Value", childValue);
+                        //Log.i("KEY", imeRegion);
+                        //Log.i("Value", childValue);
                     }
                 }
                 setUpAutoComplete();
             }
 
             @Override
-            public void onFailure(@NonNull Call<Map<String, Map<String, All>>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Map<String, Map<String, Region>>> call, @NonNull Throwable t) {
                 Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.error_loading), Toast.LENGTH_SHORT).show();
             }
         });
@@ -126,11 +125,15 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void startFavouriteCountriesActivity(View view) {
+        Intent intent = new Intent(this, FavouriteCountriesActivity.class);
+        startActivity(intent);
+    }
+
     public void setUpAutoComplete() {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, countries);
         binding.editTextCountry.setAdapter(adapter);
     }
 
-    //TODO:room android jetpack, UI
 
 }

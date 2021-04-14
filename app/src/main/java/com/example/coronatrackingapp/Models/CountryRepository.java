@@ -29,7 +29,7 @@ public class CountryRepository {
         new DeleteCountryAsyncTask(countryDao).execute(country);
 
     }
-    public void deleteAllCountries(Country country){
+    public void deleteAllCountries(){
         new DeleteAllCountriesAsyncTask(countryDao).execute();
     }
     public LiveData<List<Country>> getAllCountries(){

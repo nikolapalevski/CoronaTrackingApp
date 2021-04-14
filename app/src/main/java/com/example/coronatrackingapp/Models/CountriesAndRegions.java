@@ -9,13 +9,13 @@ public class CountriesAndRegions {
 
     @SerializedName("All")
     @Expose
-    private Map<String, Map<String,All>> mapCountriesAndRegions;
+    private Map<String, Map<String, Region>> mapCountriesAndRegions;
 
-    public Map<String, Map<String, All>> getMapCountriesAndRegions() {
+    public Map<String, Map<String, Region>> getMapCountriesAndRegions() {
         return mapCountriesAndRegions;
     }
 
-    public void setMapCountriesAndRegions(Map<String, Map<String, All>> mapCountriesAndRegions) {
+    public void setMapCountriesAndRegions(Map<String, Map<String, Region>> mapCountriesAndRegions) {
         this.mapCountriesAndRegions = mapCountriesAndRegions;
     }
 }

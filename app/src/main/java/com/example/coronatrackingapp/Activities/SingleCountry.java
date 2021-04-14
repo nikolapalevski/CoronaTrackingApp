@@ -6,16 +6,13 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.coronatrackingapp.Models.All;
+import com.example.coronatrackingapp.Models.Region;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
-import com.example.coronatrackingapp.R;
-import com.example.coronatrackingapp.databinding.ActivityMainBinding;
 import com.example.coronatrackingapp.databinding.ActivitySingleCountryBinding;
 
 import java.util.Map;
@@ -42,11 +39,11 @@ public class SingleCountry extends AppCompatActivity {
     }
     private void apiCallForCountry(){
 
-        Call<Map<String, All>> call = myApi.getSpecificCountry(currCountry);
-        call.enqueue(new Callback<Map<String, All>>() {
+        Call<Map<String, Region>> call = myApi.getSpecificCountry(currCountry);
+        call.enqueue(new Callback<Map<String, Region>>() {
             @Override
-            public void onResponse(@NonNull Call<Map<String, All>> call, @NonNull Response<Map<String, All>> response) {
-                Map<String, All> mapRegions = response.body();
+            public void onResponse(@NonNull Call<Map<String, Region>> call, @NonNull Response<Map<String, Region>> response) {
+                Map<String, Region> mapRegions = response.body();
                 StringBuilder finalResult = new StringBuilder(currCountry + "\n\n");
                 for (String keys : mapRegions.keySet()) {
 
@@ -59,7 +56,7 @@ public class SingleCountry extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Map<String, All>> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Map<String, Region>> call, @NonNull Throwable t) {
                 Toast.makeText(SingleCountry.this, "Error loading!", Toast.LENGTH_SHORT).show();
             }
         });
