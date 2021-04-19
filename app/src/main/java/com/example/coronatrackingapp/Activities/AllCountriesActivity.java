@@ -11,7 +11,6 @@ import android.widget.Toast;
 import com.example.coronatrackingapp.Helpers.RecyclerAdapter;
 import com.example.coronatrackingapp.R;
 import com.example.coronatrackingapp.Utils.OnCountryClickListener;
-import com.example.coronatrackingapp.Utils.OnFavouriteCountryClickListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AllCountriesActivity extends AppCompatActivity implements OnCountryClickListener, OnFavouriteCountryClickListener {
+public class AllCountriesActivity extends AppCompatActivity implements OnCountryClickListener {
 
 
     private RecyclerView recyclerView;
@@ -37,7 +36,7 @@ public class AllCountriesActivity extends AppCompatActivity implements OnCountry
         List<String> countriesList = Arrays.asList(countries);
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        if (countries != null) adapter = new RecyclerAdapter(this, countriesList, this);
+        adapter = new RecyclerAdapter(this, countriesList);
         recyclerView.setAdapter(adapter);
     }
 
@@ -46,19 +45,11 @@ public class AllCountriesActivity extends AppCompatActivity implements OnCountry
     public void onCountryClick(String countryName) {
         Toast.makeText(this, "Clicked on " + countryName, Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(this, SingleCountry.class);
+        Intent intent = new Intent(this, SingleCountryActivity.class);
         intent.putExtra("country", countryName);
         startActivity(intent);
     }
 
-    @Override
-    public void onFavouriteClick(String countryName) {
-        Toast.makeText(this, "Favourite country is: " + countryName, Toast.LENGTH_SHORT).show();
-        if (!listFavouriteCountries.contains(countryName)) {
-            listFavouriteCountries.add(countryName);
-        }
-        Toast.makeText(this, listFavouriteCountries.toString(), Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

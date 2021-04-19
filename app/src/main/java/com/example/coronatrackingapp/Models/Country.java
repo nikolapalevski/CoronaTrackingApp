@@ -1,31 +1,83 @@
 package com.example.coronatrackingapp.Models;
 
+import com.google.gson.annotations.SerializedName;
+
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "country_table")
+
+@Entity
 public class Country {
-
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private Integer id;
 
-    private String country;
+    @SerializedName("country")
+    private String countryName;
+    @SerializedName("confirmed")
+    private String confirmed;
+    @SerializedName("recovered")
+    private String recovered;
+    @SerializedName("deaths")
+    private String deaths;
 
+    private Boolean isFavourite = false;
 
-    public Country(String country) {
-        this.country = country;
+    @Ignore
+    public Country() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public Country(String confirmed, String recovered, String deaths) {
+        this.confirmed = confirmed;
+        this.recovered = recovered;
+        this.deaths = deaths;
     }
 
-    public int getId() {
+    public String getConfirmed() {
+        return confirmed;
+    }
+
+    public String getRecovered() {
+        return recovered;
+    }
+
+    public String getDeaths() {
+        return deaths;
+    }
+
+    public void setConfirmed(String confirmed) {
+        this.confirmed = confirmed;
+    }
+
+    public void setRecovered(String recovered) {
+        this.recovered = recovered;
+    }
+
+    public void setDeaths(String deaths) {
+        this.deaths = deaths;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public String getCountry() {
-        return country;
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Boolean isFavourite() {
+        return isFavourite;
+    }
+
+    public void setFavourite(Boolean favourite) {
+        isFavourite = favourite;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
     }
 }
-//@Transiet za deka ne vlece od api

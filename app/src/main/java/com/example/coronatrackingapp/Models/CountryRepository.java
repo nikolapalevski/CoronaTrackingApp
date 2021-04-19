@@ -7,17 +7,21 @@ import java.util.List;
 
 import androidx.lifecycle.LiveData;
 
-public class CountryRepository {
+public class CountryRepository<T> {
     private CountryDao countryDao;
     private LiveData<List<Country>> allCountries;
+
+    private LiveData<List<Country>> favouriteCountries;
 
     public CountryRepository(Application application) {
         CountryDatabase database = CountryDatabase.getInstance(application);
         countryDao = database.countryDao();
         allCountries = countryDao.getAllNotes();
+
+        favouriteCountries = countryDao.getAllFavourite();
     }
 
-    public void insert(Country country){
+    public void insert(T country){
         new InsertCountryAsyncTask(countryDao).execute(country);
 
     }
@@ -36,7 +40,11 @@ public class CountryRepository {
         return allCountries;
     }
 
-    private static class InsertCountryAsyncTask extends AsyncTask<Country,Void,Void>{
+    public LiveData<List<Country>> getFavouriteCountries(){
+        return favouriteCountries;
+    }
+
+    private static class InsertCountryAsyncTask<T> extends AsyncTask<T,Void,Void>{
         private CountryDao countryDao;
 
         private InsertCountryAsyncTask(CountryDao countryDao){
@@ -44,8 +52,13 @@ public class CountryRepository {
         }
 
         @Override
-        protected Void doInBackground(Country... countries) {
-            countryDao.insert(countries[0]);
+        protected Void doInBackground(T... params) {
+            if (params[0] instanceof Country) {
+                countryDao.insert((Country) params[0]);
+
+            } else {
+                countryDao.insert((List<Country>) params[0]);
+            }
             return null;
         }
     }

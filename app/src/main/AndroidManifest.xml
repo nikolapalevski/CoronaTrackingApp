@@ -3,6 +3,7 @@
     package="com.example.coronatrackingapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -12,8 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CoronaTrackingApp">
         <activity android:name=".Activities.FavouriteCountriesTestActivity"></activity>
-        <activity android:name=".Activities.FavouriteCountriesActivity" />
-        <activity android:name=".Activities.SingleCountry" />
+        <activity android:name=".Activities.AllCountriesDatabaseActivity" />
+        <activity android:name=".Activities.SingleCountryActivity" />
         <activity android:name=".Activities.AllCountriesActivity" />
         <activity
             android:name=".Activities.SplashScreen"

@@ -3,10 +3,13 @@ package com.example.coronatrackingapp.Helpers;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.coronatrackingapp.Models.Country;
 import com.example.coronatrackingapp.R;
+import com.example.coronatrackingapp.Utils.OnCountryDBClickListener;
+import com.example.coronatrackingapp.Utils.OnCountryFavouriteClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 public class RecyclerAdapterFavouriteCountries extends RecyclerView.Adapter<RecyclerAdapterFavouriteCountries.CountryHolder> {
 
     private List<Country> countries = new ArrayList<>();
+
+    private final OnCountryDBClickListener onClickListener;
+    private final OnCountryFavouriteClickListener onCountryFavouriteClickListener;
+
+    public RecyclerAdapterFavouriteCountries(OnCountryDBClickListener listener, OnCountryFavouriteClickListener onCountryFavouriteClickListener) {
+        this.onClickListener = listener;
+        this.onCountryFavouriteClickListener = onCountryFavouriteClickListener;
+    }
 
     @NonNull
     @Override
@@ -29,7 +40,25 @@ public class RecyclerAdapterFavouriteCountries extends RecyclerView.Adapter<Recy
     @Override
     public void onBindViewHolder(@NonNull CountryHolder holder, int position) {
         Country currCountry = countries.get(position);
-        holder.textViewCountry.setText(currCountry.getCountry());
+        holder.textViewCountry.setText(currCountry.getCountryName());
+        holder.textViewCountry.setOnClickListener(view -> onClickListener.onCountryClick(currCountry));
+        if (currCountry.isFavourite()) {
+            holder.imageViewFavourite.setImageResource(R.drawable.ic_favorite_red);
+        } else {
+            holder.imageViewFavourite.setImageResource(R.drawable.ic_favourite_white);
+        }
+
+        holder.imageViewFavourite.setOnClickListener(view -> {
+
+            if (!currCountry.isFavourite()) {
+                holder.imageViewFavourite.setImageResource(R.drawable.ic_favorite_red);
+            } else {
+                holder.imageViewFavourite.setImageResource(R.drawable.ic_favourite_white);
+            }
+            onCountryFavouriteClickListener.onCountryFavouriteClick(currCountry);
+
+
+        });
     }
 
     @Override
@@ -49,10 +78,12 @@ public class RecyclerAdapterFavouriteCountries extends RecyclerView.Adapter<Recy
 
     class CountryHolder extends RecyclerView.ViewHolder {
         private TextView textViewCountry;
+        private ImageView imageViewFavourite;
 
         public CountryHolder(@NonNull View itemView) {
             super(itemView);
             textViewCountry = itemView.findViewById(R.id.textViewAdapterItem);
+            imageViewFavourite = itemView.findViewById(R.id.favouriteButton);
         }
     }
 }

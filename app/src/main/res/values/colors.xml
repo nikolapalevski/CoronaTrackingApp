@@ -9,5 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="logoGreen">#045757</color>
     <color name="background">#dee0e0</color>
-    <color name="appBar">#146464</color>
+    <color name="appBar">#0e2f56</color>
+    <color name="darkBlue">#0e2f56</color>
+    <color name="lightBlue">#2978b5</color>
+    <color name="backgroundLightBlue">#bfd7e9</color>
+    <color name="favouriteRed">#f05945</color>
+
 </resources>

@@ -15,11 +15,11 @@ public interface MyApi {
 //    Call<Countries> getCountry(@Query("country") String country);
 
     @GET("/v1/cases?country=")
-    Call<Map<String, Region>> getSpecificCountry(@Query("country") String country);
+    Call<Map<String, Country>> getSpecificCountry(@Query("country") String country);
 
     @GET("/v1/cases")
-    Call<Map<String, Region>> getAllCountries();
+    Call<Map<String, Country>> getAllCountries();
 
     @GET("/v1/cases")
-    Call<Map<String,Map<String, Region>>> getAllCountriesAndRegions();
+    Call<Map<String,Map<String, Country>>> getAllCountriesAndRegions();
 }

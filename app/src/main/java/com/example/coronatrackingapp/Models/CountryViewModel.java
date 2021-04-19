@@ -8,18 +8,22 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-public class CountryViewModel extends AndroidViewModel {
+public class CountryViewModel<T> extends AndroidViewModel {
 
     private CountryRepository repository;
     private LiveData<List<Country>> allCountries;
+
+    private LiveData<List<Country>> favouriteCountries;
 
     public CountryViewModel(@NonNull Application application) {
         super(application);
         repository = new CountryRepository(application);
         allCountries = repository.getAllCountries();
+
+        favouriteCountries =repository.getFavouriteCountries();
     }
 
-    public void insert(Country country){
+    public void insert(T country){
         repository.insert(country);
     }
     public void update(Country country){
@@ -33,6 +37,9 @@ public class CountryViewModel extends AndroidViewModel {
     }
     public LiveData<List<Country>> getAllCountries(){
         return allCountries;
+    }
+    public LiveData<List<Country>> getFavouriteCountries(){
+        return favouriteCountries;
     }
 
 
