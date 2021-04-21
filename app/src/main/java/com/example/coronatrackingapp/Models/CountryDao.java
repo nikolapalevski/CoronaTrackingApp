@@ -38,7 +38,7 @@ public interface CountryDao {
     @Query("SELECT * FROM country where isFavourite=1 and countryName is not null ORDER BY id DESC")
     LiveData<List<Country>> getAllFavourite();
 
-    //todo metod za proverka dali objektot postoi vo baza spored ime
+    // metod za proverka dali objektot postoi vo baza spored ime
     @Query("SELECT id FROM country WHERE countryName LIKE :country")
     int getCountryId(String country);
 

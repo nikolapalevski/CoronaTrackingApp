@@ -13,6 +13,7 @@ import com.example.coronatrackingapp.Models.CountryViewModel;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
 import com.example.coronatrackingapp.R;
+import com.example.coronatrackingapp.Utils.Constants;
 import com.example.coronatrackingapp.Utils.OnCountryDBClickListener;
 import com.example.coronatrackingapp.databinding.ActivitySingleCountryBinding;
 
@@ -59,10 +60,10 @@ public class SingleCountryActivity extends AppCompatActivity  {
     }
 
     private void setupDataFromDB(){
-        recovered = getIntent().getStringExtra("recovered");
-        confirmed = getIntent().getStringExtra("confirmed");
-        deaths = getIntent().getStringExtra("deaths");
-        isFavourite = getIntent().getBooleanExtra("favourite", false);
+        recovered = getIntent().getStringExtra(Constants.RECOVERED_EXTRA);
+        confirmed = getIntent().getStringExtra(Constants.CONFIRMED_EXTRA);
+        deaths = getIntent().getStringExtra(Constants.DEATHS_EXTRA);
+        isFavourite = getIntent().getBooleanExtra(Constants.FAVOURITE_EXTRA, false);
 
         StringBuilder finalResult = new StringBuilder("\n\n");
         finalResult.append("Confirmed: ").append(confirmed).append("\n")

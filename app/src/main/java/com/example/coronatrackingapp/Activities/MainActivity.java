@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.coronatrackingapp.Helpers.NotificationHelper;
 import com.example.coronatrackingapp.Models.Country;
+import com.example.coronatrackingapp.Models.CountryRepository;
 import com.example.coronatrackingapp.Models.CountryViewModel;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
@@ -26,6 +28,7 @@ import java.util.Map;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private MyApi myApi;
     private String[] countries;
     private CountryViewModel countryViewModel;
-    LiveData<List<Country>> countryArrayListOffline;
     NotificationHelper notificationHelper;
 
     @Override
@@ -55,9 +57,7 @@ public class MainActivity extends AppCompatActivity {
         if (isNetworkAvailable()) {
             loadAllCountries();
         } else {
-            Toast.makeText(this, "No internet!!!", Toast.LENGTH_SHORT).show();
-            countryArrayListOffline = countryViewModel.getAllCountries();
-
+            Toast.makeText(this, "No internet available.", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -77,9 +77,20 @@ public class MainActivity extends AppCompatActivity {
         String currCountry = binding.editTextCountry.getText().toString();
 
         if (Arrays.asList(countries).contains(currCountry)) {
-            Intent intent = new Intent(this, SingleCountryActivity.class);
-            intent.putExtra("country", currCountry);
-            startActivity(intent);
+            countryViewModel.getAllCountries().observe(this, (Observer<List<Country>>) countries -> {
+                for (int i = 0; i < countries.size(); i++) {
+                    Country currCountryDb = countries.get(i);
+                    if (currCountryDb.getCountryName().equals(currCountry)) {
+                        Intent intent = new Intent(this, SingleCountryActivity.class);
+                        intent.putExtra(Constants.COUNTRY_EXTRA, currCountryDb.getCountryName());
+                        intent.putExtra(Constants.CONFIRMED_EXTRA, currCountryDb.getConfirmed());
+                        intent.putExtra(Constants.RECOVERED_EXTRA, currCountryDb.getRecovered());
+                        intent.putExtra(Constants.DEATHS_EXTRA, currCountryDb.getDeaths());
+                        intent.putExtra(Constants.FAVOURITE_EXTRA, currCountryDb.isFavourite());
+                        startActivity(intent);
+                    }
+                }
+            });
         } else Toast.makeText(MainActivity.this, getString(R.string.enter_valid_country), Toast.LENGTH_SHORT).show();
 
         binding.editTextCountry.setText("");
@@ -94,26 +105,44 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadAllCountries() {
 
-        myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
-            @Override
-            public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
-                Map<String, Map<String, Country>> mapAllCountries = response.body();
-                countries = mapAllCountries.keySet().toArray(new String[0]);
-                for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
-                    Map<String, Country> childMap = drzava.getValue();
-                    for (Map.Entry<String, Country> region : childMap.entrySet()) {
-                        if (region.getValue() != null) {
-                            countryViewModel.insertOrUpdate(region.getValue());
+
+        countryViewModel.getFavouriteCountries().observe(this, (Observer<List<Country>>) countriesFavourite -> {
+
+            myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
+                @Override
+                public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
+                    Map<String, Map<String, Country>> mapAllCountries = response.body();
+                    countries = mapAllCountries.keySet().toArray(new String[0]);
+                    for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
+                        Map<String, Country> childMap = drzava.getValue();
+                        for (Map.Entry<String, Country> region : childMap.entrySet()) {
+                            if (region.getValue() != null) {
+                                countryViewModel.insertOrUpdate(region.getValue());
+
+                                for (int i = 0; i < countriesFavourite.size(); i++) {
+                                    if (countriesFavourite.get(i).getCountryName().equals(region.getValue().getCountryName())) {
+                                        //Toast.makeText(MainActivity.this, region.getValue().getCountryName() + " uslov", Toast.LENGTH_SHORT).show();
+                                        if (Integer.parseInt(region.getValue().getConfirmed()) - Integer.parseInt(countriesFavourite.get(i).getConfirmed()) > 0 ) {
+                                            //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getConfirmed() + "  confirmed vs.  " + region.getValue().getConfirmed(), Toast.LENGTH_SHORT).show();
+                                            notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), "Too many new cases registered!", MainActivity.class);
+                                        }
+                                        if (Integer.parseInt(region.getValue().getDeaths()) - Integer.parseInt(countriesFavourite.get(i).getDeaths()) > 0 ) {
+                                            //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getDeaths() + "  deaths vs.  " + region.getValue().getDeaths(), Toast.LENGTH_SHORT).show();
+                                            notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), "Too many victims today", MainActivity.class);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
+                    setUpAutoComplete();
                 }
-                setUpAutoComplete();
-            }
 
-            @Override
-            public void onFailure(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Throwable t) {
-                Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.error_loading), Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void onFailure(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Throwable t) {
+                    Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.error_loading), Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

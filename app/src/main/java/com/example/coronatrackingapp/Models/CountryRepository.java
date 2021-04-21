@@ -26,7 +26,7 @@ public class CountryRepository<T> {
     MyApi myApi = SingletonRetrofit.getRetrofit().create(MyApi.class);
 
 
-    private void updateDB(){
+    private void updateDB() {
 
         myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
             @Override
@@ -57,8 +57,6 @@ public class CountryRepository<T> {
     }
 
 
-
-
     public CountryRepository(Application application) {
         CountryDatabase database = CountryDatabase.getInstance(application);
         countryDao = database.countryDao();
@@ -70,22 +68,27 @@ public class CountryRepository<T> {
         new InsertCountryAsyncTask(countryDao).execute(country);
 
     }
+
     public void update(Country country) {
         int countryID = countryDao.getCountryId(country.getCountryName());
         new UpdateCountryAsyncTask(countryDao, countryID).execute(country);
 
     }
+
     public void delete(Country country) {
         new DeleteCountryAsyncTask(countryDao).execute(country);
 
     }
-    public void updateFavourite(Country country){
+
+    public void updateFavourite(Country country) {
         new UpdateFavouriteAsyncTask(countryDao).execute(country);
     }
+
     public void insertOrUpdate(Country country) {
 
         new InsertOrUpdateAsyncTask(countryDao);
     }
+
     public void deleteAllCountries() {
         new DeleteAllCountriesAsyncTask(countryDao).execute();
     }
@@ -129,7 +132,7 @@ public class CountryRepository<T> {
         @Override
         protected Void doInBackground(Country... countries) {
             Country c = countries[0];
-            if (c!=null) {
+            if (c != null) {
                 int countryId = countryDao.getCountryId(c.getCountryName());
                 boolean countryExist = countryId > -1;
                 if (countryExist) {
@@ -175,6 +178,7 @@ public class CountryRepository<T> {
             return null;
         }
     }
+
     private static class UpdateFavouriteAsyncTask extends AsyncTask<Country, Void, Void> {
         private CountryDao countryDao;
 
@@ -188,6 +192,7 @@ public class CountryRepository<T> {
             return null;
         }
     }
+
     private static class DeleteAllCountriesAsyncTask extends AsyncTask<Void, Void, Void> {
         private CountryDao countryDao;
 

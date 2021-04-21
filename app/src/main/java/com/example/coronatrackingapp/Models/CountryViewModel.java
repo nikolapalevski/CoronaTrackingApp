@@ -49,4 +49,3 @@ public class CountryViewModel<T> extends AndroidViewModel {
 
 
 }
-//view model factory

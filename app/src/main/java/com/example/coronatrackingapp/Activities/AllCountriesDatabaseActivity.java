@@ -9,6 +9,7 @@ import com.example.coronatrackingapp.Helpers.RecyclerAdapterFavouriteCountries;
 import com.example.coronatrackingapp.Models.Country;
 import com.example.coronatrackingapp.Models.CountryViewModel;
 import com.example.coronatrackingapp.R;
+import com.example.coronatrackingapp.Utils.Constants;
 import com.example.coronatrackingapp.Utils.OnCountryDBClickListener;
 import com.example.coronatrackingapp.Utils.OnCountryFavouriteClickListener;
 
@@ -67,11 +68,11 @@ public class AllCountriesDatabaseActivity extends AppCompatActivity implements O
 
         Toast.makeText(this, country.getCountryName() + country.getConfirmed(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, SingleCountryActivity.class);
-        intent.putExtra("country", country.getCountryName());
-        intent.putExtra("confirmed", country.getConfirmed());
-        intent.putExtra("recovered", country.getRecovered());
-        intent.putExtra("deaths", country.getDeaths());
-        intent.putExtra("favourite", country.isFavourite());
+        intent.putExtra(Constants.COUNTRY_EXTRA, country.getCountryName());
+        intent.putExtra(Constants.CONFIRMED_EXTRA, country.getConfirmed());
+        intent.putExtra(Constants.RECOVERED_EXTRA, country.getRecovered());
+        intent.putExtra(Constants.DEATHS_EXTRA, country.getDeaths());
+        intent.putExtra(Constants.FAVOURITE_EXTRA, country.isFavourite());
         startActivity(intent);
 
     }
