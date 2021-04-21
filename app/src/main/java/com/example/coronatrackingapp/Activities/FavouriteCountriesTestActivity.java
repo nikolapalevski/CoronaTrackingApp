@@ -1,6 +1,7 @@
 package com.example.coronatrackingapp.Activities;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -41,7 +42,6 @@ public class FavouriteCountriesTestActivity extends AppCompatActivity implements
             //update RecyclerView
             adapter.setCountries(countries);
         });
-
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FavouriteCountriesTestActivity extends AppCompatActivity implements
     public void onCountryFavouriteClick(Country country) {
 
         country.setFavourite(false);
-        countryViewModel.update(country);
+        countryViewModel.updateFavourite(country);
         Toast.makeText(this, country.getCountryName() + " was removed from favourite countries.", Toast.LENGTH_SHORT).show();
     }
 }

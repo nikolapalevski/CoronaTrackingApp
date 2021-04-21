@@ -11,7 +11,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-@Database(entities = {Country.class}, version = 2)
+@Database(entities = {Country.class}, version = 3)
 public abstract class CountryDatabase extends RoomDatabase {
 
     private static CountryDatabase instance;
@@ -22,7 +22,7 @@ public abstract class CountryDatabase extends RoomDatabase {
         if (instance == null) {
             instance = Room.databaseBuilder(context.getApplicationContext(),
                     CountryDatabase.class, "country_database")
-                    .fallbackToDestructiveMigration()
+                    .fallbackToDestructiveMigration() //todo replace with migration
                     .build();
         }
         return instance;

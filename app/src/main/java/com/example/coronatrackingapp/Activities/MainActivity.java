@@ -10,14 +10,15 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import com.example.coronatrackingapp.Helpers.NotificationHelper;
 import com.example.coronatrackingapp.Models.Country;
 import com.example.coronatrackingapp.Models.CountryViewModel;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
 import com.example.coronatrackingapp.R;
+import com.example.coronatrackingapp.Utils.Constants;
 import com.example.coronatrackingapp.databinding.ActivityMainBinding;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private String[] countries;
     private CountryViewModel countryViewModel;
     LiveData<List<Country>> countryArrayListOffline;
+    NotificationHelper notificationHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         View view = binding.getRoot();
         setContentView(view);
         countryViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(CountryViewModel.class);
+
+        notificationHelper = new NotificationHelper(this);
 
         setupRetrofit();
 
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SingleCountryActivity.class);
             intent.putExtra("country", currCountry);
             startActivity(intent);
-        } else Toast.makeText(MainActivity.this, "Enter Valid Country", Toast.LENGTH_SHORT).show();
+        } else Toast.makeText(MainActivity.this, getString(R.string.enter_valid_country), Toast.LENGTH_SHORT).show();
 
         binding.editTextCountry.setText("");
         hideKeyboard();
@@ -95,14 +99,14 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
                 Map<String, Map<String, Country>> mapAllCountries = response.body();
                 countries = mapAllCountries.keySet().toArray(new String[0]);
-                List<Country> countryDBList = new ArrayList<>();
                 for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
                     Map<String, Country> childMap = drzava.getValue();
                     for (Map.Entry<String, Country> region : childMap.entrySet()) {
-                        countryDBList.add(region.getValue());
+                        if (region.getValue() != null) {
+                            countryViewModel.insertOrUpdate(region.getValue());
+                        }
                     }
                 }
-                countryViewModel.insert(countryDBList);
                 setUpAutoComplete();
             }
 
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isNetworkAvailable()) {
             Intent intent = new Intent(this, AllCountriesActivity.class);
-            intent.putExtra("countries", countries);
+            intent.putExtra(Constants.COUNTRIES_EXTRA, countries);
             startActivity(intent);
         } else {
             Intent intent = new Intent(this, AllCountriesDatabaseActivity.class);
@@ -140,4 +144,11 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, FavouriteCountriesTestActivity.class);
         startActivity(intent);
     }
+
+    public void sendNotification(View view) {
+
+        notificationHelper.sendHighPriorityNotification("Title text", "body text", MainActivity.class);
+    }
+
+
 }

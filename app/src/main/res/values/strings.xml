@@ -3,4 +3,5 @@
     <string name="error_loading">Error loading!</string>
     <string name="search_for_country">Search for country</string>
     <string name="show_all_countries">Show all countries</string>
+    <string name="enter_valid_country">Enter Valid Country</string>
 </resources>

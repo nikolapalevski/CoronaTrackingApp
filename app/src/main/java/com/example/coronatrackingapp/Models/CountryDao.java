@@ -20,8 +20,11 @@ public interface CountryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(List<Country> countries);
 
+    @Query("UPDATE Country SET confirmed = :confirmed, recovered = :recovered, deaths = :deaths WHERE id = :id")
+    void update(String confirmed, String recovered, String deaths, int id);
+
     @Update
-    void update(Country country);
+    void updateFavourite(Country country);
 
     @Delete
     void delete(Country country);
@@ -35,5 +38,8 @@ public interface CountryDao {
     @Query("SELECT * FROM country where isFavourite=1 and countryName is not null ORDER BY id DESC")
     LiveData<List<Country>> getAllFavourite();
 
+    //todo metod za proverka dali objektot postoi vo baza spored ime
+    @Query("SELECT id FROM country WHERE countryName LIKE :country")
+    int getCountryId(String country);
 
 }

@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.coronatrackingapp.Helpers.RecyclerAdapter;
 import com.example.coronatrackingapp.R;
+import com.example.coronatrackingapp.Utils.Constants;
 import com.example.coronatrackingapp.Utils.OnCountryClickListener;
 
 import java.util.ArrayList;
@@ -25,13 +26,12 @@ public class AllCountriesActivity extends AppCompatActivity implements OnCountry
 
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
-    private List<String> listFavouriteCountries = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_countries);
-        String[] countries = getIntent().getStringArrayExtra("countries");
+        String[] countries = getIntent().getStringArrayExtra(Constants.COUNTRIES_EXTRA);
         assert countries != null;
         List<String> countriesList = Arrays.asList(countries);
         recyclerView = findViewById(R.id.recyclerView);

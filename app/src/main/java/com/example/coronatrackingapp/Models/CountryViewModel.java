@@ -32,6 +32,9 @@ public class CountryViewModel<T> extends AndroidViewModel {
     public void delete(Country country){
         repository.delete(country);
     }
+    public void updateFavourite(Country country){
+        repository.updateFavourite(country);
+    }
     public void deleteAllCountries(){
         repository.deleteAllCountries();
     }
@@ -41,6 +44,8 @@ public class CountryViewModel<T> extends AndroidViewModel {
     public LiveData<List<Country>> getFavouriteCountries(){
         return favouriteCountries;
     }
+
+    public void insertOrUpdate(Country country){repository.insertOrUpdate(country);}
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.coronatrackingapp.Activities;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -85,7 +86,7 @@ public class AllCountriesDatabaseActivity extends AppCompatActivity implements O
             country.setFavourite(false);
             Toast.makeText(this, country.getCountryName() + " was removed favourite countries.", Toast.LENGTH_SHORT).show();
         }
-        countryViewModel.update(country);
+        countryViewModel.updateFavourite(country);
 
     }
 
