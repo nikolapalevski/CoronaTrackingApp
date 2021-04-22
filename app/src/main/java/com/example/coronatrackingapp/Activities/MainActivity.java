@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 
 import com.example.coronatrackingapp.Helpers.NotificationHelper;
 import com.example.coronatrackingapp.Models.Country;
-import com.example.coronatrackingapp.Models.CountryRepository;
 import com.example.coronatrackingapp.Models.CountryViewModel;
 import com.example.coronatrackingapp.Models.MyApi;
 import com.example.coronatrackingapp.Models.SingletonRetrofit;
@@ -27,7 +25,6 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import retrofit2.Call;
@@ -51,20 +48,23 @@ public class MainActivity extends AppCompatActivity {
         countryViewModel = new ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.getApplication())).get(CountryViewModel.class);
 
         notificationHelper = new NotificationHelper(this);
+        networkCondition();
 
-        setupRetrofit();
+    }
 
+    private void networkCondition() {
         if (isNetworkAvailable()) {
+            setupRetrofit();
             loadAllCountries();
         } else {
-            Toast.makeText(this, "No internet available.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        assert connectivityManager != null;
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
@@ -86,12 +86,12 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra(Constants.CONFIRMED_EXTRA, currCountryDb.getConfirmed());
                         intent.putExtra(Constants.RECOVERED_EXTRA, currCountryDb.getRecovered());
                         intent.putExtra(Constants.DEATHS_EXTRA, currCountryDb.getDeaths());
-                        intent.putExtra(Constants.FAVOURITE_EXTRA, currCountryDb.isFavourite());
                         startActivity(intent);
                     }
                 }
             });
-        } else Toast.makeText(MainActivity.this, getString(R.string.enter_valid_country), Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(MainActivity.this, getString(R.string.enter_valid_country), Toast.LENGTH_SHORT).show();
 
         binding.editTextCountry.setText("");
         hideKeyboard();
@@ -114,23 +114,24 @@ public class MainActivity extends AppCompatActivity {
                     Map<String, Map<String, Country>> mapAllCountries = response.body();
                     countries = mapAllCountries.keySet().toArray(new String[0]);
                     for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
-                        Map<String, Country> childMap = drzava.getValue();
-                        for (Map.Entry<String, Country> region : childMap.entrySet()) {
-                            if (region.getValue() != null) {
-                                countryViewModel.insertOrUpdate(region.getValue());
-
-                                for (int i = 0; i < countriesFavourite.size(); i++) {
-                                    if (countriesFavourite.get(i).getCountryName().equals(region.getValue().getCountryName())) {
-                                        //Toast.makeText(MainActivity.this, region.getValue().getCountryName() + " uslov", Toast.LENGTH_SHORT).show();
-                                        if (Integer.parseInt(region.getValue().getConfirmed()) - Integer.parseInt(countriesFavourite.get(i).getConfirmed()) > 0 ) {
-                                            //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getConfirmed() + "  confirmed vs.  " + region.getValue().getConfirmed(), Toast.LENGTH_SHORT).show();
-                                            notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), "Too many new cases registered!", MainActivity.class);
-                                        }
-                                        if (Integer.parseInt(region.getValue().getDeaths()) - Integer.parseInt(countriesFavourite.get(i).getDeaths()) > 0 ) {
-                                            //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getDeaths() + "  deaths vs.  " + region.getValue().getDeaths(), Toast.LENGTH_SHORT).show();
-                                            notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), "Too many victims today", MainActivity.class);
+                        if (drzava.getValue() != null) {
+                            Map<String, Country> childMap = drzava.getValue();
+                            for (Map.Entry<String, Country> region : childMap.entrySet()) {
+                                if (region.getValue() != null) {
+                                    for (int i = 0; i < countriesFavourite.size(); i++) {
+                                        if (countriesFavourite.get(i).getCountryName().equals(region.getValue().getCountryName())) {
+                                            //Toast.makeText(MainActivity.this, region.getValue().getCountryName() + " uslov", Toast.LENGTH_SHORT).show();
+                                            if (Integer.parseInt(region.getValue().getConfirmed()) - Integer.parseInt(countriesFavourite.get(i).getConfirmed()) == 0) {
+                                                //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getConfirmed() + "  confirmed vs.  " + region.getValue().getConfirmed(), Toast.LENGTH_SHORT).show();
+                                                notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), getString(R.string.new_cases), FavouriteCountriesTestActivity.class, countriesFavourite.get(i).getId());
+                                            }
+                                            if (Integer.parseInt(region.getValue().getDeaths()) - Integer.parseInt(countriesFavourite.get(i).getDeaths()) == 0) {
+                                                //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getDeaths() + "  deaths vs.  " + region.getValue().getDeaths(), Toast.LENGTH_SHORT).show();
+                                                notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), getString(R.string.new_deaths), FavouriteCountriesTestActivity.class, -countriesFavourite.get(i).getId());
+                                            }
                                         }
                                     }
+                                    countryViewModel.insertOrUpdate(region.getValue());
                                 }
                             }
                         }
@@ -147,18 +148,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startAllCountriesActivity(View view) {
-
-        if (isNetworkAvailable()) {
-            Intent intent = new Intent(this, AllCountriesActivity.class);
-            intent.putExtra(Constants.COUNTRIES_EXTRA, countries);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, AllCountriesDatabaseActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    public void startFavouriteCountriesActivity(View view) {
         Intent intent = new Intent(this, AllCountriesDatabaseActivity.class);
         startActivity(intent);
     }
@@ -168,16 +157,9 @@ public class MainActivity extends AppCompatActivity {
         binding.editTextCountry.setAdapter(adapter);
     }
 
-    public void startAllCountryActivityFavCountries(View view) {
+    public void startFavouriteCountries(View view) {
 
         Intent intent = new Intent(this, FavouriteCountriesTestActivity.class);
         startActivity(intent);
     }
-
-    public void sendNotification(View view) {
-
-        notificationHelper.sendHighPriorityNotification("Title text", "body text", MainActivity.class);
-    }
-
-
 }

@@ -1,7 +1,6 @@
 package com.example.coronatrackingapp.Activities;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -66,13 +65,11 @@ public class AllCountriesDatabaseActivity extends AppCompatActivity implements O
     @Override
     public void onCountryClick(Country country) {
 
-        Toast.makeText(this, country.getCountryName() + country.getConfirmed(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, SingleCountryActivity.class);
         intent.putExtra(Constants.COUNTRY_EXTRA, country.getCountryName());
         intent.putExtra(Constants.CONFIRMED_EXTRA, country.getConfirmed());
         intent.putExtra(Constants.RECOVERED_EXTRA, country.getRecovered());
         intent.putExtra(Constants.DEATHS_EXTRA, country.getDeaths());
-        intent.putExtra(Constants.FAVOURITE_EXTRA, country.isFavourite());
         startActivity(intent);
 
     }
@@ -82,10 +79,10 @@ public class AllCountriesDatabaseActivity extends AppCompatActivity implements O
 
         if (!country.isFavourite()) {
             country.setFavourite(true);
-            Toast.makeText(this, country.getCountryName() + " added to favourite countries.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, country.getCountryName() + getString(R.string.added_country), Toast.LENGTH_SHORT).show();
         } else {
             country.setFavourite(false);
-            Toast.makeText(this, country.getCountryName() + " was removed favourite countries.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, country.getCountryName() + getString(R.string.removed_country), Toast.LENGTH_SHORT).show();
         }
         countryViewModel.updateFavourite(country);
 

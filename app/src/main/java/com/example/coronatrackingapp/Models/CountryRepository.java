@@ -32,7 +32,6 @@ public class CountryRepository<T> {
             @Override
             public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
                 Map<String, Map<String, Country>> mapAllCountries = response.body();
-                //countries = mapAllCountries.keySet().toArray(new String[0]);
                 List<Country> countryDBList = new ArrayList<>();
                 for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
                     Map<String, Country> childMap = drzava.getValue();
@@ -44,7 +43,6 @@ public class CountryRepository<T> {
 
                     }
                 }
-                //setUpAutoComplete();
             }
 
             @Override
@@ -64,7 +62,7 @@ public class CountryRepository<T> {
         favouriteCountries = countryDao.getAllFavourite();
     }
 
-    public void insert(T country) {
+    public void insert(Country country) {
         new InsertCountryAsyncTask(countryDao).execute(country);
 
     }
@@ -102,109 +100,104 @@ public class CountryRepository<T> {
     }
 
 
-    private static class InsertCountryAsyncTask<T> extends AsyncTask<T, Void, Void> {
-        private CountryDao countryDao;
-
-        private InsertCountryAsyncTask(CountryDao countryDao) {
-            this.countryDao = countryDao;
-        }
-
-        @Override
-        protected Void doInBackground(T... params) {
-            if (params[0] instanceof Country) {
-                countryDao.insert((Country) params[0]);
-
-            } else {
-                countryDao.insert((List<Country>) params[0]);
-            }
-            return null;
-        }
-    }
-
-
-    private static class InsertOrUpdateAsyncTask extends AsyncTask<Country, Void, Void> {
-        private CountryDao countryDao;
-
-        private InsertOrUpdateAsyncTask(CountryDao countryDao) {
-            this.countryDao = countryDao;
-        }
-
-        @Override
-        protected Void doInBackground(Country... countries) {
-            Country c = countries[0];
-            if (c != null) {
-                int countryId = countryDao.getCountryId(c.getCountryName());
-                boolean countryExist = countryId > -1;
-                if (countryExist) {
-                    countryDao.update(c.getConfirmed(), c.getRecovered(), c.getDeaths(), countryId);
-                } else {
-                    countryDao.insert(c);
-                }
-            }
-            return null;
-        }
-    }
+//    private static class InsertCountryAsyncTask extends AsyncTask<Country, Void, Void> {
+//        private CountryDao countryDao;
+//
+//        private InsertCountryAsyncTask(CountryDao countryDao) {
+//            this.countryDao = countryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Country... params) {
+//
+//                countryDao.insert(params[0]);
+//
+//            return null;
+//        }
+//    }
+//    private static class InsertOrUpdateAsyncTask extends AsyncTask<Country, Void, Void> {
+//        private CountryDao countryDao;
+//
+//        private InsertOrUpdateAsyncTask(CountryDao countryDao) {
+//            this.countryDao = countryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Country... countries) {
+//            Country c = countries[0];
+//            if (c != null) {
+//                int countryId = countryDao.getCountryId(c.getCountryName());
+//                boolean countryExist = countryId > -1;
+//                if (countryExist) {
+//                    countryDao.update(c.getConfirmed(), c.getRecovered(), c.getDeaths(), countryId);
+//                } else {
+//                    countryDao.insert(c);
+//                }
+//            }
+//            return null;
+//        }
+//    }
 
 
-    private static class UpdateCountryAsyncTask extends AsyncTask<Country, Void, Void> {
-        private CountryDao countryDao;
-        private int countryId;
+//    private static class UpdateCountryAsyncTask extends AsyncTask<Country, Void, Void> {
+//        private CountryDao countryDao;
+//        private int countryId;
+//
+//        private UpdateCountryAsyncTask(CountryDao countryDao, int countryId) {
+//            this.countryDao = countryDao;
+//            this.countryId = countryId;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Country... countries) {
+//            for (Country c :
+//                    countries) {
+//                countryDao.update(c.getConfirmed(), c.getRecovered(), c.getDeaths(), countryId);
+//            }
+//            return null;
+//        }
+//    }
 
-        private UpdateCountryAsyncTask(CountryDao countryDao, int countryId) {
-            this.countryDao = countryDao;
-            this.countryId = countryId;
-        }
+//    private static class DeleteCountryAsyncTask extends AsyncTask<Country, Void, Void> {
+//        private CountryDao countryDao;
+//
+//        private DeleteCountryAsyncTask(CountryDao countryDao) {
+//            this.countryDao = countryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Country... countries) {
+//            countryDao.delete(countries[0]);
+//            return null;
+//        }
+//    }
 
-        @Override
-        protected Void doInBackground(Country... countries) {
-            for (Country c :
-                    countries) {
-                countryDao.update(c.getConfirmed(), c.getRecovered(), c.getDeaths(), countryId);
-            }
-            return null;
-        }
-    }
+//    private static class UpdateFavouriteAsyncTask extends AsyncTask<Country, Void, Void> {
+//        private CountryDao countryDao;
+//
+//        private UpdateFavouriteAsyncTask(CountryDao countryDao) {
+//            this.countryDao = countryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Country... countries) {
+//            countryDao.updateFavourite(countries[0]);
+//            return null;
+//        }
+//    }
 
-    private static class DeleteCountryAsyncTask extends AsyncTask<Country, Void, Void> {
-        private CountryDao countryDao;
-
-        private DeleteCountryAsyncTask(CountryDao countryDao) {
-            this.countryDao = countryDao;
-        }
-
-        @Override
-        protected Void doInBackground(Country... countries) {
-            countryDao.delete(countries[0]);
-            return null;
-        }
-    }
-
-    private static class UpdateFavouriteAsyncTask extends AsyncTask<Country, Void, Void> {
-        private CountryDao countryDao;
-
-        private UpdateFavouriteAsyncTask(CountryDao countryDao) {
-            this.countryDao = countryDao;
-        }
-
-        @Override
-        protected Void doInBackground(Country... countries) {
-            countryDao.updateFavourite(countries[0]);
-            return null;
-        }
-    }
-
-    private static class DeleteAllCountriesAsyncTask extends AsyncTask<Void, Void, Void> {
-        private CountryDao countryDao;
-
-        private DeleteAllCountriesAsyncTask(CountryDao countryDao) {
-            this.countryDao = countryDao;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            countryDao.deleteAllCountries();
-            return null;
-        }
-    }
+//    private static class DeleteAllCountriesAsyncTask extends AsyncTask<Void, Void, Void> {
+//        private CountryDao countryDao;
+//
+//        private DeleteAllCountriesAsyncTask(CountryDao countryDao) {
+//            this.countryDao = countryDao;
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Void... voids) {
+//            countryDao.deleteAllCountries();
+//            return null;
+//        }
+//    }
 
 }

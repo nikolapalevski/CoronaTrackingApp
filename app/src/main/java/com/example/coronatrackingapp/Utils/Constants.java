@@ -7,5 +7,4 @@ public class Constants {
     public static final String CONFIRMED_EXTRA = "confirmed";
     public static final String RECOVERED_EXTRA = "recovered";
     public static final String DEATHS_EXTRA = "deaths";
-    public static final String FAVOURITE_EXTRA = "favourite";
 }

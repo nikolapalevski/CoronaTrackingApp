@@ -4,4 +4,12 @@
     <string name="search_for_country">Search for country</string>
     <string name="show_all_countries">Show all countries</string>
     <string name="enter_valid_country">Enter Valid Country</string>
+    <string name="removed_country">\u0020was removed from favourite countries.</string>
+    <string name="added_country">\u0020added to favourite countries.</string>
+    <string name="no_internet">No internet available.</string>
+    <string name="logo">logo</string>
+    <string name="favourite_countries">Favourite countries</string>
+    <string name="all_countries">All Countries</string>
+    <string name="new_cases">More than 3000 new cases.</string>
+    <string name="new_deaths">More than 100 new deaths.</string>
 </resources>

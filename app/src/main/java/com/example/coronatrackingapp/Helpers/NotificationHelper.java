@@ -41,12 +41,13 @@ public class NotificationHelper extends ContextWrapper {
         notificationChannel.setDescription("Description of the channel");
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert notificationManager != null;
         notificationManager.createNotificationChannel(notificationChannel);
 
 
     }
 
-    public void sendHighPriorityNotification(String title, String body, Class activityName){
+    public void sendHighPriorityNotification(String title, String body, Class activityName, int id){
 
         Intent intent = new Intent(this, activityName);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 267, intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -62,7 +63,7 @@ public class NotificationHelper extends ContextWrapper {
                 .setAutoCancel(true)
                 .build();
 
-        NotificationManagerCompat.from(this).notify(new Random().nextInt(), notification);
+        NotificationManagerCompat.from(this).notify(id, notification);
 
 
     }

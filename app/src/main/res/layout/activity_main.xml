@@ -22,7 +22,7 @@
         <ImageView
             android:layout_width="300dp"
             android:layout_height="200dp"
-            android:contentDescription="logo"
+            android:contentDescription="@string/logo"
             android:src="@drawable/logo" />
     </androidx.cardview.widget.CardView>
 
@@ -40,7 +40,6 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardViewLogo">
-        <!--TODO check SearchView - optional-->
 
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -58,10 +57,11 @@
                 android:completionHint="Select a country"
                 android:completionThreshold="1"
                 android:ems="13"
-                android:hint="Search for country"
+                android:hint="@string/search_for_country"
                 android:inputType="textCapWords"
-                android:paddingLeft="10dp"
+                android:paddingStart="10dp"
                 android:paddingTop="10dp"
+                android:paddingEnd="0dp"
                 android:textColor="@color/white"
                 android:textColorHint="@color/white" />
 
@@ -91,38 +91,12 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/buttonNotifications"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:onClick="sendNotification"
-        android:text="Notification"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/buttonFavouriteCountries"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
-    <Button
-        android:id="@+id/buttonFavouriteCountries"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:onClick="startFavouriteCountriesActivity"
-        android:text="Favourite countries/database"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/cardViewFavCountries"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardViewFavCountries"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginBottom="20dp"
-        android:onClick="startAllCountryActivityFavCountries"
+        android:layout_marginBottom="40dp"
+        android:onClick="startFavouriteCountries"
         app:cardBackgroundColor="@color/favouriteRed"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -135,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:paddingBottom="10dp"
-            android:text="Favourite countries"
+            android:text="@string/favourite_countries"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="17sp" />
@@ -144,7 +118,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
-            android:contentDescription="favourite"
+            android:contentDescription="@string/logo"
             android:paddingTop="15dp"
             android:src="@drawable/ic_favourite_white" />
     </androidx.cardview.widget.CardView>
@@ -153,7 +127,7 @@
         android:id="@+id/cardViewAllCountries"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="40dp"
         android:onClick="startAllCountriesActivity"
         app:cardBackgroundColor="@color/lightBlue"
         app:cardCornerRadius="10dp"
@@ -167,7 +141,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
             android:paddingBottom="10dp"
-            android:text="All  Countries"
+            android:text="@string/all_countries"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:textSize="17sp" />
@@ -176,7 +150,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|center"
-            android:contentDescription="favourite"
+            android:contentDescription="@string/logo"
             android:paddingTop="15dp"
             android:src="@drawable/ic_world_white" />
     </androidx.cardview.widget.CardView>

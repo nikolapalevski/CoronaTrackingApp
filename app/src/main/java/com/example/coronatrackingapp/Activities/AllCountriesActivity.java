@@ -20,7 +20,7 @@ import java.util.List;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+@Deprecated
 public class AllCountriesActivity extends AppCompatActivity implements OnCountryClickListener {
 
 

@@ -23,7 +23,7 @@ public class CountryViewModel<T> extends AndroidViewModel {
         favouriteCountries =repository.getFavouriteCountries();
     }
 
-    public void insert(T country){
+    public void insert(Country country){
         repository.insert(country);
     }
     public void update(Country country){
