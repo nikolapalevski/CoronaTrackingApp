@@ -26,6 +26,7 @@ public class CountryRepository<T> {
     MyApi myApi = SingletonRetrofit.getRetrofit().create(MyApi.class);
 
 
+    @Deprecated
     private void updateDB() {
 
         myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
@@ -84,7 +85,7 @@ public class CountryRepository<T> {
 
     public void insertOrUpdate(Country country) {
 
-        new InsertOrUpdateAsyncTask(countryDao);
+        new InsertOrUpdateAsyncTask(countryDao).execute(country);
     }
 
     public void deleteAllCountries() {

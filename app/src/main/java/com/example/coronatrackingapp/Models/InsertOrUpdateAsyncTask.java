@@ -14,7 +14,7 @@ public class InsertOrUpdateAsyncTask extends AsyncTask<Country, Void, Void> {
         Country c = countries[0];
         if (c != null) {
             int countryId = countryDao.getCountryId(c.getCountryName());
-            boolean countryExist = countryId > -1;
+            boolean countryExist = countryId > 0;
             if (countryExist) {
                 countryDao.update(c.getConfirmed(), c.getRecovered(), c.getDeaths(), countryId);
             } else {

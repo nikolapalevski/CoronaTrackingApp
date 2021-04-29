@@ -2,13 +2,15 @@ package com.example.coronatrackingapp.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 
 @Entity
-public class Country {
+public class Country implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private Integer id;
 
@@ -79,5 +81,16 @@ public class Country {
 
     public void setCountryName(String countryName) {
         this.countryName = countryName;
+    }
+
+    @Override
+    public String toString() {
+        return "Country{" +
+                ", countryName='" + countryName + '\'' +
+                ", confirmed='" + confirmed + '\'' +
+                ", recovered='" + recovered + '\'' +
+                ", deaths='" + deaths + '\'' +
+                ", isFavourite=" + isFavourite +
+                '}';
     }
 }

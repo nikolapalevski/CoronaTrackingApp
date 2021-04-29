@@ -19,7 +19,7 @@ import com.example.coronatrackingapp.R;
 import com.example.coronatrackingapp.Utils.Constants;
 import com.example.coronatrackingapp.databinding.ActivityMainBinding;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     ActivityMainBinding binding;
     private MyApi myApi;
-    private String[] countries;
     private CountryViewModel countryViewModel;
     NotificationHelper notificationHelper;
 
@@ -53,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void networkCondition() {
-        if (isNetworkAvailable()) {
-            setupRetrofit();
-            loadAllCountries();
-        } else {
+        if (!isNetworkAvailable()) {
             Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
+            return;
         }
+        setupRetrofit();
+        loadAllCountries();
     }
 
     private boolean isNetworkAvailable() {
@@ -75,26 +74,20 @@ public class MainActivity extends AppCompatActivity {
 
     public void searchFunc(View view) {
         String currCountry = binding.editTextCountry.getText().toString();
+        List<Country> searchCountries = new ArrayList<>();
+        countryViewModel.getAllCountries().observe(this, (Observer<List<Country>>) countries -> searchCountries.addAll(countries));
 
-        if (Arrays.asList(countries).contains(currCountry)) {
-            countryViewModel.getAllCountries().observe(this, (Observer<List<Country>>) countries -> {
-                for (int i = 0; i < countries.size(); i++) {
-                    Country currCountryDb = countries.get(i);
-                    if (currCountryDb.getCountryName().equals(currCountry)) {
-                        Intent intent = new Intent(this, SingleCountryActivity.class);
-                        intent.putExtra(Constants.COUNTRY_EXTRA, currCountryDb.getCountryName());
-                        intent.putExtra(Constants.CONFIRMED_EXTRA, currCountryDb.getConfirmed());
-                        intent.putExtra(Constants.RECOVERED_EXTRA, currCountryDb.getRecovered());
-                        intent.putExtra(Constants.DEATHS_EXTRA, currCountryDb.getDeaths());
-                        startActivity(intent);
-                    }
-                }
-            });
-        } else
+        if (!searchCountries.stream().anyMatch(item -> item.getCountryName().toLowerCase().contains(currCountry.toLowerCase()))) {
             Toast.makeText(MainActivity.this, getString(R.string.enter_valid_country), Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         binding.editTextCountry.setText("");
         hideKeyboard();
+        Country filteredCountry = searchCountries.stream().filter(item -> item.getCountryName().contains(currCountry)).findFirst().orElse(null);
+        Intent intent = new Intent(this, SingleCountryActivity.class);
+        intent.putExtra(Constants.COUNTRY_EXTRA, filteredCountry);
+        startActivity(intent);
     }
 
     public void hideKeyboard() {
@@ -106,60 +99,64 @@ public class MainActivity extends AppCompatActivity {
     private void loadAllCountries() {
 
 
-        countryViewModel.getFavouriteCountries().observe(this, (Observer<List<Country>>) countriesFavourite -> {
-
-            myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
-                @Override
-                public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
-                    Map<String, Map<String, Country>> mapAllCountries = response.body();
-                    countries = mapAllCountries.keySet().toArray(new String[0]);
-                    for (Map.Entry<String, Map<String, Country>> drzava : mapAllCountries.entrySet()) {
-                        if (drzava.getValue() != null) {
-                            Map<String, Country> childMap = drzava.getValue();
-                            for (Map.Entry<String, Country> region : childMap.entrySet()) {
-                                if (region.getValue() != null) {
-                                    for (int i = 0; i < countriesFavourite.size(); i++) {
-                                        if (countriesFavourite.get(i).getCountryName().equals(region.getValue().getCountryName())) {
-                                            //Toast.makeText(MainActivity.this, region.getValue().getCountryName() + " uslov", Toast.LENGTH_SHORT).show();
-                                            if (Integer.parseInt(region.getValue().getConfirmed()) - Integer.parseInt(countriesFavourite.get(i).getConfirmed()) == 0) {
-                                                //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getConfirmed() + "  confirmed vs.  " + region.getValue().getConfirmed(), Toast.LENGTH_SHORT).show();
-                                                notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), getString(R.string.new_cases), FavouriteCountriesTestActivity.class, countriesFavourite.get(i).getId());
-                                            }
-                                            if (Integer.parseInt(region.getValue().getDeaths()) - Integer.parseInt(countriesFavourite.get(i).getDeaths()) == 0) {
-                                                //Toast.makeText(MainActivity.this, countriesFavourite.get(i).getDeaths() + "  deaths vs.  " + region.getValue().getDeaths(), Toast.LENGTH_SHORT).show();
-                                                notificationHelper.sendHighPriorityNotification(countriesFavourite.get(i).getCountryName(), getString(R.string.new_deaths), FavouriteCountriesTestActivity.class, -countriesFavourite.get(i).getId());
-                                            }
-                                        }
-                                    }
-                                    countryViewModel.insertOrUpdate(region.getValue());
+        List<Country> favouriteCountryList = new ArrayList<>();
+        countryViewModel.getFavouriteCountries().observe(this, (Observer<List<Country>>) countriesFavourite -> favouriteCountryList.addAll(countriesFavourite));
+        myApi.getAllCountriesAndRegions().enqueue(new Callback<Map<String, Map<String, Country>>>() {
+            @Override
+            public void onResponse(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Response<Map<String, Map<String, Country>>> response) {
+                Map<String, Map<String, Country>> mapAllCountries = response.body();
+                // get keys from MAP (each key is name of country)
+                setUpAutoComplete(mapAllCountries.keySet().toArray(new String[0]));
+                for (Map.Entry<String, Map<String, Country>> currentCountry : mapAllCountries.entrySet()) {
+                    if (currentCountry.getValue() != null) {
+                        Map<String, Country> childMap = currentCountry.getValue();
+                        for (Map.Entry<String, Country> region : childMap.entrySet()) {
+                            Country country = region.getValue();
+//                            // add regions to the list but uncomment check for name bellow
+//                            if (country.getCountryName() == null) {
+//                                country.setCountryName(region.getKey());
+//                            }
+                            if (country != null) { // this no need if we have the code above
+//                              // update or insert data in DB
+                                countryViewModel.insertOrUpdate(country);
+                                // check if we have favourite items
+                                if (favouriteCountryList.size() > 0) {
+                                    sendNotification(country, favouriteCountryList);
                                 }
                             }
                         }
                     }
-                    setUpAutoComplete();
                 }
+            }
 
-                @Override
-                public void onFailure(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Throwable t) {
-                    Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.error_loading), Toast.LENGTH_SHORT).show();
-                }
-            });
+            @Override
+            public void onFailure(@NonNull Call<Map<String, Map<String, Country>>> call, @NonNull Throwable t) {
+                Toast.makeText(MainActivity.this, MainActivity.this.getString(R.string.error_loading), Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
-    public void startAllCountriesActivity(View view) {
-        Intent intent = new Intent(this, AllCountriesDatabaseActivity.class);
-        startActivity(intent);
+    private void sendNotification(Country country, List<Country> favouriteCountryList) {
+        Country favCountry = favouriteCountryList.stream().filter(item -> item.getCountryName().equals(country.getCountryName())).findAny().orElse(null);
+        if (favCountry != null) {
+            if (Integer.parseInt(country.getConfirmed()) - Integer.parseInt(favCountry.getConfirmed()) > 3000) {
+                notificationHelper.sendHighPriorityNotification(favCountry.getCountryName(), Integer.parseInt(country.getConfirmed()) - Integer.parseInt(favCountry.getConfirmed()) + getString(R.string.new_cases), FavouriteCountriesTestActivity.class, favCountry.getId());
+            }
+            if (Integer.parseInt(country.getDeaths()) - Integer.parseInt(favCountry.getDeaths()) > 100) {
+                notificationHelper.sendHighPriorityNotification(favCountry.getCountryName(), Integer.parseInt(country.getDeaths()) - Integer.parseInt(favCountry.getDeaths()) + getString(R.string.new_deaths), FavouriteCountriesTestActivity.class, -favCountry.getId());
+            }
+        }
     }
 
-    public void setUpAutoComplete() {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, countries);
-        binding.editTextCountry.setAdapter(adapter);
+    public void startAllCountriesActivity(View view) {
+        startActivity(new Intent(this, AllCountriesDatabaseActivity.class));
+    }
+
+    public void setUpAutoComplete(String[] countries) {
+        binding.editTextCountry.setAdapter(new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, countries));
     }
 
     public void startFavouriteCountries(View view) {
-
-        Intent intent = new Intent(this, FavouriteCountriesTestActivity.class);
-        startActivity(intent);
+        startActivity(new Intent(this, FavouriteCountriesTestActivity.class));
     }
 }

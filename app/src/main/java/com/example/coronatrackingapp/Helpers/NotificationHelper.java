@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.os.Build;
+import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.example.coronatrackingapp.R;
 
@@ -29,8 +31,8 @@ public class NotificationHelper extends ContextWrapper {
         }
     }
 
-    private String CHANNEL_NAME = "High priority channel";
-    private String CHANNEL_ID = "Country1";
+    private final String CHANNEL_NAME = "High priority channel";
+    private final String CHANNEL_ID = "Country1";
 
     private void createChannels(){
 
@@ -48,25 +50,57 @@ public class NotificationHelper extends ContextWrapper {
     }
 
     public void sendHighPriorityNotification(String title, String body, Class activityName, int id){
+        Notification notification;
+        RemoteViews collapsedView = new RemoteViews(getPackageName(), R.layout.notification_layout);
+        Intent intent = new Intent(this, activityName);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 267, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        collapsedView.setTextViewText(R.id.textViewNotificationTitle, title);
+        collapsedView.setTextViewText(R.id.textViewNotificationBody, body);
+
+        if(title.equals("North Macedonia")){
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_favourite_white)
+                    .setCustomContentView(collapsedView)
+                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .build();
+
+        }
+        else{
+            notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setSmallIcon(R.drawable.ic_favourite_white)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle("summary")
+                            .setBigContentTitle(title).bigText(body))
+                    .setContentIntent(pendingIntent)
+                    .setAutoCancel(true)
+                    .build();
+
+
+        }
+        NotificationManagerCompat.from(this).notify(id, notification);
+    }
+
+    public void sendNotificationCustom(String title, String body, Class activityName, int id){
+        RemoteViews collapsedView = new RemoteViews(getPackageName(), R.layout.notification_layout);
 
         Intent intent = new Intent(this, activityName);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 267, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle(title)
-                .setContentText(body)
-                .setSmallIcon(R.drawable.ic_favorite_red)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setStyle(new NotificationCompat.BigTextStyle().setBigContentTitle("summary")
-                .setBigContentTitle(title).bigText(body))
+                .setSmallIcon(R.drawable.ic_favourite_white)
+                .setCustomContentView(collapsedView)
+                .setCustomBigContentView(collapsedView)
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
                 .build();
 
         NotificationManagerCompat.from(this).notify(id, notification);
-
-
     }
+
 
 
 }

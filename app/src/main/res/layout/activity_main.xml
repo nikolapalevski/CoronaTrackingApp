@@ -45,18 +45,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_weight="3"
             app:cardBackgroundColor="@color/backgroundLightBlue"
             app:cardCornerRadius="15dp">
 
             <AutoCompleteTextView
                 android:id="@+id/editTextCountry"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginBottom="5dp"
                 android:background="@color/backgroundLightBlue"
                 android:completionHint="Select a country"
                 android:completionThreshold="1"
-                android:ems="13"
                 android:hint="@string/search_for_country"
                 android:inputType="textCapWords"
                 android:paddingStart="10dp"
@@ -73,7 +73,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_marginStart="15dp"
-            app:cardBackgroundColor="@color/appBar"
             app:cardCornerRadius="10dp"
             app:layout_constraintStart_toEndOf="@+id/editTextCountry"
             app:layout_constraintTop_toTopOf="parent">

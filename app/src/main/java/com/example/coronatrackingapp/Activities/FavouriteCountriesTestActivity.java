@@ -46,10 +46,7 @@ public class FavouriteCountriesTestActivity extends AppCompatActivity implements
     @Override
     public void onCountryClick(Country country) {
         Intent intent = new Intent(this, SingleCountryActivity.class);
-        intent.putExtra(Constants.COUNTRY_EXTRA, country.getCountryName());
-        intent.putExtra(Constants.CONFIRMED_EXTRA, country.getConfirmed());
-        intent.putExtra(Constants.RECOVERED_EXTRA, country.getRecovered());
-        intent.putExtra(Constants.DEATHS_EXTRA, country.getDeaths());
+        intent.putExtra(Constants.COUNTRY_EXTRA, country);
         startActivity(intent);
     }
 

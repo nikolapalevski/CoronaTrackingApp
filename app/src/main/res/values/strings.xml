@@ -9,7 +9,7 @@
     <string name="no_internet">No internet available.</string>
     <string name="logo">logo</string>
     <string name="favourite_countries">Favourite countries</string>
-    <string name="all_countries">All Countries</string>
-    <string name="new_cases">More than 3000 new cases.</string>
-    <string name="new_deaths">More than 100 new deaths.</string>
+    <string name="all_countries">All <br/>Countries</string>
+    <string name="new_cases">\u0020new cases.</string>
+    <string name="new_deaths">\u0020new deaths.</string>
 </resources>
